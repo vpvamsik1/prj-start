@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "ng-course-recipe-book-2-c004f": {
+      "hosting": {
+        "my-first-app": [
+          "ng-course-recipe-book-2-c004f"
+        ]
+      }
+    }
+  }
+}
