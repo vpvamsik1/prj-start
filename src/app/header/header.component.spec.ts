@@ -1,5 +1,5 @@
 import { HttpClientModule } from '@angular/common/http';
-import { TestBed, async } from '@angular/core/testing';
+import { TestBed, async, ComponentFixture } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { Observable, of, Subscription } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
@@ -17,9 +17,9 @@ const authService = {
   }
 }
 
-fdescribe('HeaderComponent', () => {
+describe('HeaderComponent', () => {
   let app: HeaderComponent;
-  let fixture;
+  let fixture: ComponentFixture<HeaderComponent>;
 
   let user: Observable<User>;
   let userSubscription: Subscription;
@@ -96,14 +96,21 @@ fdescribe('HeaderComponent', () => {
     expect(user2).toBeNull();
   });
 
-  // it('should unsubscribe the user ', () => {
+  it('should unsubscribe the user ', () => {
 
-  //   spyOn(app.userSub, 'unsubscribe').and.callThrough();
-  //   // app.ngOnInit();
-  //   const userSub = authService.user.subscribe((data)=>{});
-  //   // spyOn(app.userSub, 'unsubscribe').and.returnValue(userSub);
-  //   app.ngOnDestroy();
-  //   // expect(app.userSub.unsubscribe).toHaveBeenCalled();
-  //   expect(app.userSub.unsubscribe).toHaveBeenCalled();
-  // });
+    // spyOn(app.userSub, 'unsubscribe').and.callThrough();
+    // // app.ngOnInit();
+    // const userSub = authService.user.subscribe((data)=>{});
+    // // spyOn(app.userSub, 'unsubscribe').and.returnValue(userSub);
+    // app.ngOnDestroy();
+    // // expect(app.userSub.unsubscribe).toHaveBeenCalled();
+    // expect(app.userSub.unsubscribe).toHaveBeenCalled();
+    fixture.detectChanges();
+    spyOn(app['userSub'], 'unsubscribe');
+    app.ngOnDestroy();
+    expect(app['userSub'].unsubscribe).toHaveBeenCalledTimes(1);
+  });
+
+
+
 });

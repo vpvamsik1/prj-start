@@ -16,11 +16,11 @@ export class AuthComponent implements OnDestroy {
     isLoading = false;
     error: string = null;
     @ViewChild(PlaceholderDirective, {static: false}) alertHost: PlaceholderDirective;
-    
+
     private closeSub: Subscription;
 
     constructor(
-        private authService: AuthService, 
+        private authService: AuthService,
         private router: Router,
         private componentFactoryResolver: ComponentFactoryResolver
     ) {}
@@ -31,18 +31,22 @@ export class AuthComponent implements OnDestroy {
 
     onSubmit(form: NgForm) {
         console.log(form.value);
+        console.log("h3llo");
         if (!form.valid) {
             return;
         }
+        console.log("hello 4");
         const email = form.value.email;
         const password = form.value.password;
 
         let authObs: Observable<AuthResponseData>;
 
         this.isLoading = true;
-
+        console.log("hi", this.isLoginMode);
         if (this.isLoginMode) {
-           authObs = this.authService.login(email, password)
+          console.log("hi 2", this.isLoginMode);
+           authObs = this.authService.login(email, password);
+           console.log("hi 3", authObs);
             //...
         } else {
             authObs = this.authService.signup(email, password)
@@ -50,12 +54,12 @@ export class AuthComponent implements OnDestroy {
 
         authObs.subscribe(
             resData => {
-                console.log(resData);
+                console.log("resdata",resData);
                 this.isLoading = false;
                 this.router.navigate(['/recipes']);
-            }, 
+            },
             errorMessage => {
-                console.log(errorMessage);
+                console.log("ASDFADF",errorMessage);
                 this.error = errorMessage;
                 this.showErrorAlert(errorMessage);
                 this.isLoading = false;
@@ -74,7 +78,7 @@ export class AuthComponent implements OnDestroy {
         }
     }
 
-    private showErrorAlert(message: string) {
+    public showErrorAlert(message: string) {
         // const alertCmp = new AlertComponent();
         const alertCmpFactory = this.componentFactoryResolver.resolveComponentFactory(AlertComponent);
         const hostViewContainerRef = this.alertHost.viewContainerRef;

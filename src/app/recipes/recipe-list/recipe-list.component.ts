@@ -15,7 +15,7 @@ export class RecipeListComponent implements OnInit, OnDestroy {
   recipes: Recipe[];
   subscription: Subscription;
 
-  constructor(private recipeService: RecipeService, private router: Router, private route: ActivatedRoute) { 
+  constructor(private recipeService: RecipeService, private router: Router, private route: ActivatedRoute) {
 
   }
 
@@ -23,9 +23,11 @@ export class RecipeListComponent implements OnInit, OnDestroy {
     this.subscription = this.recipeService.recipesChanged
       .subscribe(
         (recipes: Recipe[]) => {
+          // console.log("in subscription", recipes);
           this.recipes = recipes;
         }
       )
+
     this.recipes = this.recipeService.getRecipes();
   }
 

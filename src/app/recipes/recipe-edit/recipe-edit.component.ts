@@ -15,7 +15,7 @@ export class RecipeEditComponent implements OnInit {
   recipeForm: FormGroup;
 
   constructor(
-    private route: ActivatedRoute, 
+    private route: ActivatedRoute,
     private recipeService: RecipeService,
     private router: Router) { }
 
@@ -104,6 +104,7 @@ export class RecipeEditComponent implements OnInit {
       'description': new FormControl(recipeDescription, Validators.required),
       'ingredients': recipeIngredients
     });
+    console.log("hi", this.recipeForm.value.ingredients);
   }
 
 }
