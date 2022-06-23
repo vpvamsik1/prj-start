@@ -68,17 +68,33 @@ fdescribe('RecipeService', () => {
     }
   ]
 
-  const recipeSpy = jasmine.createSpyObj('RecipeService',
-    ['setRecipes', 'getRecipes'],
+  let mockIngredients = [
+    {
+        "amount": 4,
+        "name": "Meat"
+    },
+    {
+        "amount": 20,
+        "name": "Fries"
+    }
+  ]
+
+  let recipeSpy = jasmine.createSpyObj('RecipeService',
+    ['setRecipes', 'getRecipes', 'getRecipe', 'addRecipe'],
     {recipesChanged: of(mockRecipes), recipes: mockRecipes}
+  );
+
+  let mockShoppingListServiceSpy = jasmine.createSpyObj('ShoppingListService',
+    ['addIngredients']
   );
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [],
       providers: [
-        ShoppingListService,
-        {provide: RecipeService, useValue: recipeSpy}
+        // RecipeService,
+        {provide: RecipeService, useValue: recipeSpy},
+        // {provide: ShoppingListService, useValue: mockShoppingListServiceSpy}
       ],
     }).compileComponents();
     service = TestBed.inject(RecipeService);
@@ -90,19 +106,95 @@ fdescribe('RecipeService', () => {
 
   it('should set the recipes', () => {
     recipeSpy.setRecipes.and.returnValue(of(mockRecipes));
+    service.setRecipes(mockRecipes);
+    expect(service.recipes).toBe(mockRecipes);
     service.recipesChanged.subscribe((data) => {
-      // console.log("data20022", data);
       expect(data[0].description).toBe('This is simply a test');
     });
-    // service.setRecipes(mockRecipes);
-
   });
 
   it('should slice the copy on getRecipes', () => {
-    // service.recipes = mockRecipes
-    recipeSpy.setRecipes.and.returnValue(of(mockRecipes));
-    const recipe = service.getRecipes();
-    console.log("hi", recipe);
-    expect(recipe[0].description).toBe('This is simply a test');
+    recipeSpy.getRecipes.and.returnValue(mockRecipes);
+    const newRecipes = service.getRecipes();
+    expect(newRecipes[0].description).toBe("This is simply a test");
   });
-})
+
+  it('should get the recipe per the index', () => {
+    recipeSpy.getRecipe.and.returnValue(mockRecipes[1]);
+    const newRecipe = service.getRecipe(1);
+    expect(recipeSpy.getRecipe).toHaveBeenCalledWith(1);
+  });
+
+  it('should add the recipe', (done) => {
+
+    const newRecipe2 = {
+        "description": "ham 2!",
+        "imagePath": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Egg_Sandwich.jpg/330px-Egg_Sandwich.jpg",
+        "ingredients": [
+            {
+                "amount": 4,
+                "name": "Leaves"
+            }
+        ],
+        "name": "Burger with pig"
+
+    }
+    recipeSpy.getRecipes.and.returnValue([...mockRecipes, newRecipe2]);
+
+    service.addRecipe(newRecipe2);
+    expect(recipeSpy.addRecipe).toHaveBeenCalledWith(newRecipe2);
+    const newRecipeList = service.getRecipes();
+
+    expect(newRecipeList[3].description).toBe("ham 2!");
+    // recipeSpy.recipesChanged.and.returnValue(of([...mockRecipes, newRecipe2]));
+    // spyOnProperty(recipeSpy, 'recipesChanged', 'get').and.returnValue(of([...mockRecipes, newRecipe2]))
+    // spyOn(service.recipesChanged, 'next');
+    expect(service.recipesChanged.next).toHaveBeenCalled();
+    // service.recipesChanged.subscribe((data) => {
+    //   console.log("hello", data[3]);
+    //   expect(data[3].description).toBe('ham 2fdbd!');
+    //   done();
+    // });
+  });
+
+});
+
+describe('RecipeServiceForShoppingList', () => {
+
+  let service: RecipeService;
+
+  let mockIngredients = [
+    {
+        "amount": 4,
+        "name": "Meat"
+    },
+    {
+        "amount": 20,
+        "name": "Fries"
+    }
+  ]
+
+  let mockShoppingListServiceSpy = jasmine.createSpyObj('ShoppingListService',
+    ['addIngredients']
+  );
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [],
+      providers: [
+        RecipeService,
+        // {provide: RecipeService, useValue: recipeSpy},
+        {provide: ShoppingListService, useValue: mockShoppingListServiceSpy}
+      ],
+    }).compileComponents();
+    service = TestBed.inject(RecipeService);
+  });
+
+  it('should add ingredients to the shopping list', () => {
+    service.addIngredientsToShoppingList(mockIngredients);
+    expect(mockShoppingListServiceSpy.addIngredients).toHaveBeenCalledWith(mockIngredients);
+  });
+
+});
+
+
